@@ -1,0 +1,3 @@
+- fix disable button 
+- add verification of chatId before sending a message +
+- add verification of url - 

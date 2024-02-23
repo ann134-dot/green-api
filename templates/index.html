@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button and Input Template</title>
+</head>
+<body>
+
+    <div class="container">
+        <div class="left-side">
+            <input type="text" placeholder="ID Instance" id="idInstance">
+            <input type="text" placeholder="API Token Instance" id="ApiTokenInstance">
+            <button id="getSettings">Get Settings</button>
+            <button id="getStateInstance">Get State Instance</button>
+            <br>
+            
+            <form id="sendMessage">
+                <input type="text" id="chatId" placeholder="chatId" required>
+                <input type="text" id="message" placeholder="message" required>
+        
+                <button type="button" onclick="submitForm()">Send message</button>
+            </form>
+
+            <br>
+            
+            <form id="sendFileByUrl">
+                <input type="text" id="chatId2" placeholder="chatId" required>
+                <input type="text" id="url" placeholder="url" required>
+        
+                <button type="button" onclick="submitForm2()">Send File By Url </button>
+            </form>
+        </div>
+
+        <div class="right-side">
+            <div id="jsonOutput">JSON output will be displayed here</div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('getSettings').addEventListener('click', function() {
+            button = document.getElementById('getSettings');
+            instanceId = document.getElementById('idInstance').value;
+            apiInstanceToken = document.getElementById('ApiTokenInstance').value; 
+
+            if (instanceId === "" || apiInstanceToken === ""){
+                document.getElementById('jsonOutput').innerHTML = "Empty values in instanceId or apiInstanceToken";
+                return;
+            }
+            if (!button.disabled) {
+                button.disabled = true;                
+                fetch('/getSettings?instanceId='
+                +encodeURIComponent(instanceId)
+                +'&apiInstanceToken='+
+                encodeURIComponent(apiInstanceToken))
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('jsonOutput').innerHTML = JSON.stringify(data, null, 2);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                        document.getElementById('jsonOutput').innerHTML = "Error fetching data. More in console"
+                    })
+                    .then(() => button.disabled = false);
+                
+            }
+        });
+
+        document.getElementById('getStateInstance').addEventListener('click', function() {
+            button = document.getElementById('getStateInstance');
+            instanceId = document.getElementById('idInstance').value;
+            apiInstanceToken = document.getElementById('ApiTokenInstance').value; 
+
+            if (instanceId === "" || apiInstanceToken === ""){
+                document.getElementById('jsonOutput').innerHTML = "Empty values in instanceId or apiInstanceToken";
+                return;
+            }
+            if (!button.disabled) {
+                button.disabled = true;                
+                fetch('/getStateInstance?instanceId='
+                +encodeURIComponent(instanceId)
+                +'&apiInstanceToken='+
+                encodeURIComponent(apiInstanceToken))
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('jsonOutput').innerHTML = JSON.stringify(data, null, 2);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                        document.getElementById('jsonOutput').innerHTML = "Error fetching data. More in console"
+                    })
+                    .then(() => button.disabled = false);;
+            }
+        });
+
+
+        function submitForm() {
+            form = document.getElementById('sendMessage');
+            chatId = document.getElementById('chatId').value;
+            msg = document.getElementById('message').value;
+            button = form.getElementsByTagName('button')[0]
+
+            instanceId = document.getElementById('idInstance').value;
+            apiInstanceToken = document.getElementById('ApiTokenInstance').value; 
+
+            if (msg === "" || chatId === "") {
+                document.getElementById('jsonOutput').innerHTML = "Message or chatId is empty";
+                return;
+            }
+            
+            if (instanceId === "" || apiInstanceToken === ""){
+                document.getElementById('jsonOutput').innerHTML = "Empty values in instanceId or apiInstanceToken";
+                return;
+            }
+            
+            if (!button.disabled) {
+                button.disabled = true;                
+                fetch('/sendMessage?instanceId='
+                +encodeURIComponent(instanceId)
+                +'&apiInstanceToken='+
+                encodeURIComponent(apiInstanceToken),{
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        message: msg,
+                        chatId: chatId
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('jsonOutput').innerHTML = JSON.stringify(data, null, 2);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                        document.getElementById('jsonOutput').innerHTML = "Error fetching data. More in console"
+                    })
+                    .then(() => button.disabled = false);;
+            }
+
+        }
+
+        function submitForm2() {
+            form = document.getElementById('sendFileByUrl');
+            chatId = document.getElementById('chatId2').value;
+            url = document.getElementById('url').value;
+            button = form.getElementsByTagName('button')[0]
+
+            instanceId = document.getElementById('idInstance').value;
+            apiInstanceToken = document.getElementById('ApiTokenInstance').value; 
+
+            if (url === "" || chatId === "") {
+                document.getElementById('jsonOutput').innerHTML = "URL or chatId is empty";
+                return;
+            }
+            
+            if (instanceId === "" || apiInstanceToken === ""){
+                document.getElementById('jsonOutput').innerHTML = "Empty values in instanceId or apiInstanceToken";
+                return;
+            }
+            
+            if (!button.disabled) {
+                button.disabled = true;                
+                fetch('/sendFileByUrl?instanceId='
+                +encodeURIComponent(instanceId)
+                +'&apiInstanceToken='+
+                encodeURIComponent(apiInstanceToken),{
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        urlFile: url,
+                        chatId: chatId,
+                        caption: 'Sending a file',
+                        fileName: 'file'
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('jsonOutput').innerHTML = JSON.stringify(data, null, 2);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                        document.getElementById('jsonOutput').innerHTML = "Error fetching data. More in console"
+                    })
+                    .then(() => button.disabled = false);
+            }
+
+        }
+
+</script>
+</body>
+
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .container {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        height: 25px; 
+    }
+
+    .left-side {
+        margin-right: 80px;
+    }
+
+    .right-side {
+        flex-grow: 1;
+    }
+
+    button, input {
+        display: block;
+        margin: 20px;
+    }
+
+    #jsonOutput {
+        white-space: pre-wrap;
+        overflow: auto;
+        padding: 10px;
+        border: 1px solid #979797;
+        /* background-color: #f9f9f9; */
+    }
+    form input {
+        margin: 5px;
+        margin-left: 20px;
+    }
+    
+    form button {
+        margin: 5px;
+        margin-left: 20px;
+    }
+</style>
+</html>
+
